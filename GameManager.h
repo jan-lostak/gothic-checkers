@@ -9,39 +9,39 @@
 
 class GameManager
 {
-	public:
-		static GameManager* GetInstance();
+    public:
+        static GameManager* GetInstance();
 
-		GameManager();
-		~GameManager();
+        GameManager();
+        ~GameManager();
 
-		void SetGameType(GameType gameType) { _gameType = gameType; }
-		GameType GetGameType() { return _gameType; }
+        void SetGameType(GameType gameType) { _gameType = gameType; }
+        GameType GetGameType() { return _gameType; }
 
-		GameBoard* GetBoard() { return _board; }
-		Game* GetGame() { return _game; }
+        GameBoard* GetBoard() { return _board; }
+        Game* GetGame() { return _game; }
 
         Player* GetPlayerOnTurn() { return _playerOnTurn; }
-		Player* GetOponentOf(Player* /*player*/);
+        Player* GetOponentOf(Player* /*player*/);
         Player* GetBlackPlayer() { return _blackPlayer; }
         Player* GetWhitePlayer() { return _whitePlayer; }
 
-		void DoTurn(Turn turn);
-		void SwapPlayers();
-		void Initialize();
+        void DoTurn(Turn turn);
+        void SwapPlayers();
+        void Initialize();
         void SetColorOnTurn(PieceColor /*color*/);
 
         void SetGameChanged(bool changed) { _gameChanged = changed; }
         bool HasGameChanged() { return _gameChanged; }
 
-	private:
-		Game* _game;
-		GameBoard* _board;
-		GameType _gameType;
-		PieceColor _firstPlayerColor;
-		Player* _blackPlayer;
-		Player* _whitePlayer;
-		Player* _playerOnTurn;
+    private:
+        Game* _game;
+        GameBoard* _board;
+        GameType _gameType;
+        PieceColor _firstPlayerColor;
+        Player* _blackPlayer;
+        Player* _whitePlayer;
+        Player* _playerOnTurn;
         bool _gameChanged;
 };
 

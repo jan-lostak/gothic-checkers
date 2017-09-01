@@ -3,19 +3,19 @@
 
 GameBoard::GameBoard(int rows, int cols)
 {
-	_bRows = rows;
-	_bCols = cols;
-	_inversed = false;
-	_movesCounter = 0;
+    _bRows = rows;
+    _bCols = cols;
+    _inversed = false;
+    _movesCounter = 0;
 
-	for (int i = 0; i < _bRows; i++)
-		for (int j = 0; j < _bCols; j++)
-			_slots[i][j] = nullptr;
+    for (int i = 0; i < _bRows; i++)
+        for (int j = 0; j < _bCols; j++)
+            _slots[i][j] = nullptr;
 }
 
 GameBoard::~GameBoard()
 {
-	Clear();
+    Clear();
 }
 
 GameBoard* GameBoard::Clone()
@@ -40,57 +40,57 @@ GameBoard* GameBoard::Clone()
 
 void GameBoard::AddPiece(PieceType type, PieceColor color, int row, int col)
 {
-	ChessPiece* piece = new ChessPiece();
-	piece->SetPieceColor(color);
-	piece->SetPieceType(type);
+    ChessPiece* piece = new ChessPiece();
+    piece->SetPieceColor(color);
+    piece->SetPieceType(type);
 
-	SetPieceAt(piece, row, col);
-	_pieceHolder.push_back(piece);
+    SetPieceAt(piece, row, col);
+    _pieceHolder.push_back(piece);
 }
 
 ChessPiece* GameBoard::GetPieceAt(int row, int col)
 {
-	if (row > _bRows || col > _bCols)
-		return nullptr;
+    if (row > _bRows || col > _bCols)
+        return nullptr;
 
-	return _slots[row][col];
+    return _slots[row][col];
 }
 
 void GameBoard::SetPieceAt(ChessPiece* piece, int row, int col)
 {
-	if (row > _bRows || col > _bCols)
-		return;
+    if (row > _bRows || col > _bCols)
+        return;
 
-	if (piece != nullptr)
-		piece->SetPiecePosition(Position(row, col));
+    if (piece != nullptr)
+        piece->SetPiecePosition(Position(row, col));
 
-	_slots[row][col] = piece;
+    _slots[row][col] = piece;
 }
 
 bool GameBoard::IsInBoard(int row, int col)
 {
-	return !(row < 0 || col < 0 || row > _bRows - 1 || col > _bCols - 1);
+    return !(row < 0 || col < 0 || row > _bRows - 1 || col > _bCols - 1);
 }
 
 bool GameBoard::IsFieldEmpty(int row, int col)
 {
-	return GetPieceAt(row, col) == nullptr;
+    return GetPieceAt(row, col) == nullptr;
 }
 
 void GameBoard::Inverse()
 {
-	for (int i = 0; i < (_bRows / 2); i++)
-	{
-		for (int j = 0; j < _bCols; j++)
-		{
-			int iInversed = _bRows - i - 1;
-			ChessPiece* tmp = GetPieceAt(i, j);
-			SetPieceAt(GetPieceAt(iInversed, j), i, j);
-			SetPieceAt(tmp, iInversed, j);
-		}
-	}
+    for (int i = 0; i < (_bRows / 2); i++)
+    {
+        for (int j = 0; j < _bCols; j++)
+        {
+            int iInversed = _bRows - i - 1;
+            ChessPiece* tmp = GetPieceAt(i, j);
+            SetPieceAt(GetPieceAt(iInversed, j), i, j);
+            SetPieceAt(tmp, iInversed, j);
+        }
+    }
 
-	_inversed = !_inversed;
+    _inversed = !_inversed;
 }
 
 void GameBoard::Clear(bool historyIncl)
@@ -99,8 +99,8 @@ void GameBoard::Clear(bool historyIncl)
         for (int j = 0; j < _bCols; j++)
             _slots[i][j] = nullptr;
 
-	for (ChessPiece* piece : _pieceHolder)
-		delete piece;
+    for (ChessPiece* piece : _pieceHolder)
+        delete piece;
 
     _pieceHolder.clear();
 
@@ -119,31 +119,31 @@ void GameBoard::DoTurn(Turn turn, bool count)
         for (ChessPiece* piece : GetAllChessPieces())
             piecesBefore.push_back(*piece);
 
-	Position start = turn.front();
-	Position end = turn.back();
+    Position start = turn.front();
+    Position end = turn.back();
 
-	ChessPiece* tmp = GetPieceAt(start.row, start.col);
+    ChessPiece* tmp = GetPieceAt(start.row, start.col);
 
-	SetPieceAt(nullptr, start.row, start.col);
-	SetPieceAt(tmp, end.row, end.col);
+    SetPieceAt(nullptr, start.row, start.col);
+    SetPieceAt(tmp, end.row, end.col);
 
-	if (count)
-		_movesCounter++;
+    if (count)
+        _movesCounter++;
 
-	for (Position pos : turn)
-	{
+    for (Position pos : turn)
+    {
         if (pos.capturePiece == nullptr)
-			continue;
+            continue;
 
-		if (count)
-			_movesCounter = 0;
+        if (count)
+            _movesCounter = 0;
 
         ChessPiece* captured = GetPieceAt(pos.capturesRow, pos.capturesCol);
         Position captureePos = captured->GetPiecePosition();
 
         captured->SetCaptured(true);
         SetPieceAt(nullptr, captureePos.row, captureePos.col);
-	}
+    }
 
     if (count) // Přidat do historie
     {
@@ -159,103 +159,103 @@ void GameBoard::DoTurn(Turn turn, bool count)
 
 void GameBoard::UndoTurn(Turn turn)
 {
-	Position start = turn.front();
-	Position end = turn.back();
+    Position start = turn.front();
+    Position end = turn.back();
 
-	ChessPiece* tmp = GetPieceAt(end.row, end.col);
+    ChessPiece* tmp = GetPieceAt(end.row, end.col);
 
-	SetPieceAt(tmp, start.row, start.col);
-	SetPieceAt(nullptr, end.row, end.col);
+    SetPieceAt(tmp, start.row, start.col);
+    SetPieceAt(nullptr, end.row, end.col);
 
-	for (Position pos : turn)
-	{
+    for (Position pos : turn)
+    {
         if (pos.capturePiece == nullptr)
-			continue;
+            continue;
 
         Position captureePos = pos.capturePiece->GetPiecePosition();
 
         pos.capturePiece->SetCaptured(false);
         SetPieceAt(pos.capturePiece, captureePos.row, captureePos.col);
-	}
+    }
 }
 
 int GameBoard::GetPiecesCountByColorAtRow(int row, PieceColor color)
 {
-	int count = 0;
+    int count = 0;
 
-	if (row > _bRows)
-		return 0;
+    if (row > _bRows)
+        return 0;
 
-	for (int i = 0; i < _bCols; i++)
-		if (ChessPiece* piece = GetPieceAt(row, i))
-			if (piece->GetPieceColor() == color)
-				count++;
+    for (int i = 0; i < _bCols; i++)
+        if (ChessPiece* piece = GetPieceAt(row, i))
+            if (piece->GetPieceColor() == color)
+                count++;
 
-	return count;
+    return count;
 }
 
 int GameBoard::GetNeightboursFriendlyCount(ChessPiece* piece)
 {
-	int count = 0;
+    int count = 0;
 
-	for (const int* offset : _offset)
-	{
-		Position pos = piece->GetPiecePosition();
-		int rowOffset = pos.row + offset[0];
-		int colOffset = pos.col + offset[1];
+    for (const int* offset : _offset)
+    {
+        Position pos = piece->GetPiecePosition();
+        int rowOffset = pos.row + offset[0];
+        int colOffset = pos.col + offset[1];
 
-		if (!IsInBoard(rowOffset, colOffset))
-			continue;
+        if (!IsInBoard(rowOffset, colOffset))
+            continue;
 
-		if (IsFieldEmpty(rowOffset, colOffset))
-			continue;
+        if (IsFieldEmpty(rowOffset, colOffset))
+            continue;
 
-		ChessPiece* foundPiece = GetPieceAt(rowOffset, colOffset);
+        ChessPiece* foundPiece = GetPieceAt(rowOffset, colOffset);
 
-		if (foundPiece->GetPieceColor() == piece->GetPieceColor())
-			count++;
-	}
+        if (foundPiece->GetPieceColor() == piece->GetPieceColor())
+            count++;
+    }
 
-	return count;
+    return count;
 }
 
 int GameBoard::GetPiecesCountByColor(PieceColor color)
 {
-	int count = 0;
+    int count = 0;
 
-	for (int i = 0; i < _bRows; i++)
-		for (int j = 0; j < _bCols; j++)
-			if (ChessPiece* piece = GetPieceAt(i, j))
-				if (piece->GetPieceColor() == color)
-					count++;
+    for (int i = 0; i < _bRows; i++)
+        for (int j = 0; j < _bCols; j++)
+            if (ChessPiece* piece = GetPieceAt(i, j))
+                if (piece->GetPieceColor() == color)
+                    count++;
 
-	return count;
+    return count;
 }
 
 int GameBoard::GetPiecesCountByColorAndType(PieceColor color, PieceType type)
 {
-	int count = 0;
+    int count = 0;
 
-	for (int i = 0; i < _bRows; i++)
-		for (int j = 0; j < _bCols; j++)
-			if (ChessPiece* piece = GetPieceAt(i, j))
-				if (piece->GetPieceColor() == color && piece->GetPieceType() == type)
-					count++;
+    for (int i = 0; i < _bRows; i++)
+        for (int j = 0; j < _bCols; j++)
+            if (ChessPiece* piece = GetPieceAt(i, j))
+                if (piece->GetPieceColor() == color && piece->GetPieceType() == type)
+                    count++;
 
-	return count;
+    return count;
 }
 
 std::vector<ChessPiece*> GameBoard::GetAllChessPiecesByColor(PieceColor color)
 {
-	std::vector<ChessPiece*> pieces;
+    std::vector<ChessPiece*> pieces;
 
-	for (int i = 0; i < _bRows; i++)
-		for (int j = 0; j < _bCols; j++)
-			if (ChessPiece* piece = GetPieceAt(i, j))
-				if (piece->GetPieceColor() == color)
-					pieces.push_back(piece);
+    for (int i = 0; i < _bRows; i++)
+        for (int j = 0; j < _bCols; j++)
+            if (ChessPiece* piece = GetPieceAt(i, j))
+                if (piece->GetPieceColor() == color)
+                    pieces.push_back(piece);
 
-	return pieces;
+    return pieces;
 }
 
 std::vector<ChessPiece*> GameBoard::GetAllChessPieces()

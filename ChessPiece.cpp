@@ -2,7 +2,7 @@
 
 ChessPiece::ChessPiece()
 {
-	_captured = false;
+    _captured = false;
 }
 
 ChessPiece::~ChessPiece()

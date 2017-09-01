@@ -2,36 +2,36 @@
 
 GameGothicCheckers::GameGothicCheckers()
 {
-	_gameAI = new GameGothicCheckersAI();
-	_gameDifficulty = DIFFICULTY_EASY;
-	Reset();
+    _gameAI = new GameGothicCheckersAI();
+    _gameDifficulty = DIFFICULTY_EASY;
+    Reset();
 }
 
 GameGothicCheckers::~GameGothicCheckers() 
 { 
-	delete _gameAI;
+    delete _gameAI;
 }
 
 void GameGothicCheckers::Reset()
 {
     GameBoard* board = sGameManager->GetBoard();
 
-	// Pøed resetem musíme vyèistit desku a smazat alokované figurky
-	board->Clear();
+    // Pøed resetem musíme vyèistit desku a smazat alokované figurky
+    board->Clear();
 
-	for (const int* slot : _pieceDefaults)
-		board->AddPiece(PieceType(slot[3]), PieceColor(slot[2]), slot[0], slot[1]);
+    for (const int* slot : _pieceDefaults)
+        board->AddPiece(PieceType(slot[3]), PieceColor(slot[2]), slot[0], slot[1]);
 
-	_gameState = GAME_STATE_PLAY;
+    _gameState = GAME_STATE_PLAY;
 }
 
 bool GameGothicCheckers::IsTurnAllowed(Turns& legalTurns, Turn& turn)
 {
-	for (Turn legalTurn : legalTurns)
-		if (CompareTurns(legalTurn, turn))
-			return true;
+    for (Turn legalTurn : legalTurns)
+        if (CompareTurns(legalTurn, turn))
+            return true;
 
-	return false;
+    return false;
 }
 
 void GameGothicCheckers::ValidateTurn(Player* player, Turn& turn)
@@ -40,18 +40,18 @@ void GameGothicCheckers::ValidateTurn(Player* player, Turn& turn)
 
     Turns legalTurns = GetAllValidTurns(player, board);
 
-	// Kontrola platnosti tahu
-	if (!IsTurnAllowed(legalTurns, turn))
-		throw IllegalTurnException();
+    // Kontrola platnosti tahu
+    if (!IsTurnAllowed(legalTurns, turn))
+        throw IllegalTurnException();
 
-	// Kontrola zda je povinný tah
+    // Kontrola zda je povinný tah
     Turns mandatoryTurns = GetMandatoryTurns(legalTurns);
 
-	if (mandatoryTurns.size() > 0)
-	{
-		bool found = false;
+    if (mandatoryTurns.size() > 0)
+    {
+        bool found = false;
 
-		for (Turn mandatoryTurn : mandatoryTurns)
+        for (Turn mandatoryTurn : mandatoryTurns)
         {
             if (CompareTurns(turn, mandatoryTurn))
             {
@@ -60,53 +60,53 @@ void GameGothicCheckers::ValidateTurn(Player* player, Turn& turn)
             }
         }
 
-		if (!found)
-			throw MandatoryTurnRequiredException();
-	}
+        if (!found)
+            throw MandatoryTurnRequiredException();
+    }
 
-	// Nahradit tah zadaný hráèem za tah z generátoru, protože tah z generátoru obsahuje informace o zajatých figurkách
-	for (Turn legalTurn : legalTurns)
-	{
+    // Nahradit tah zadaný hráèem za tah z generátoru, protože tah z generátoru obsahuje informace o zajatých figurkách
+    for (Turn legalTurn : legalTurns)
+    {
         if (!CompareTurns(turn, legalTurn))
-			continue;
+            continue;
 
-		turn = legalTurn;
-		break;
-	}
+        turn = legalTurn;
+        break;
+    }
 }
 
 Turns GameGothicCheckers::GetMandatoryTurns(Turns& turns)
 {
-	Turns mTurns;
+    Turns mTurns;
 
-	for (Turn turn : turns)
-	{
-		for (Position pos : turn)
-		{
+    for (Turn turn : turns)
+    {
+        for (Position pos : turn)
+        {
             if (pos.capturePiece != nullptr)
-			{
-				mTurns.push_back(turn);
-				break;
-			}
-		}
-	}
+            {
+                mTurns.push_back(turn);
+                break;
+            }
+        }
+    }
 
-	return mTurns;
+    return mTurns;
 }
 
 Turns GameGothicCheckers::GetAllValidTurns(Player* player, GameBoard* board, bool ifMandatoryOnlyMandatory)
 {
-	Turns turns;
-	std::vector<ChessPiece*> pieces = board->GetAllChessPiecesByColor(player->GetPlayerColor());
-	for (ChessPiece* piece : pieces)
+    Turns turns;
+    std::vector<ChessPiece*> pieces = board->GetAllChessPiecesByColor(player->GetPlayerColor());
+    for (ChessPiece* piece : pieces)
         GetValidTurnsForPiece(piece, player, board, turns);
 
-	// Invertovat tahy pokud byl na øadì èerný, protože byla pøevrácená deska
-	if (player->GetPlayerColor() == PIECE_COLOR_BLACK)
-	{
-		int rows = board->GetBoardNumRows();
+    // Invertovat tahy pokud byl na øadì èerný, protože byla pøevrácená deska
+    if (player->GetPlayerColor() == PIECE_COLOR_BLACK)
+    {
+        int rows = board->GetBoardNumRows();
 
-		for (Turn& legalTurn : turns)
+        for (Turn& legalTurn : turns)
         {
             for (Position& turn : legalTurn)
             {
@@ -116,37 +116,37 @@ Turns GameGothicCheckers::GetAllValidTurns(Player* player, GameBoard* board, boo
                     turn.capturesRow = rows - turn.capturesRow - 1;
             }
         }
-	}
+    }
 
-	if (ifMandatoryOnlyMandatory)
-	{
-		Turns mandatoryTurns = GetMandatoryTurns(turns);
+    if (ifMandatoryOnlyMandatory)
+    {
+        Turns mandatoryTurns = GetMandatoryTurns(turns);
 
-		if (!mandatoryTurns.empty())
-			return mandatoryTurns;
-	}
+        if (!mandatoryTurns.empty())
+            return mandatoryTurns;
+    }
 
-	return turns;
+    return turns;
 }
 
 void GameGothicCheckers::GetValidTurnsForPiece(ChessPiece* piece, Player* player, GameBoard* board, Turns& turns)
 {
-	// Pokud je hráè na druhé stranì desky (èerný), tak musíme desku obrátit, aby algoritmus správnì fungoval
-	if (player->GetPlayerColor() == PIECE_COLOR_BLACK)
-		board->Inverse();
+    // Pokud je hráè na druhé stranì desky (èerný), tak musíme desku obrátit, aby algoritmus správnì fungoval
+    if (player->GetPlayerColor() == PIECE_COLOR_BLACK)
+        board->Inverse();
 
-	// Rekurzivnì zjístit pøeskokové tahy popøipadì vícenásobné tahy
+    // Rekurzivnì zjístit pøeskokové tahy popøipadì vícenásobné tahy
     Turns captureTurns = CheckForCaptureTurns(board, player, piece);
 
-	// Rekurzivnì zjístit normální tahy pokud nebyly nalezeny pøeskokové tahy
-	if (captureTurns.empty())
-		CheckForMove(board, piece, &turns);
-	else
-		turns.insert(turns.end(), captureTurns.begin(), captureTurns.end());
+    // Rekurzivnì zjístit normální tahy pokud nebyly nalezeny pøeskokové tahy
+    if (captureTurns.empty())
+        CheckForMove(board, piece, &turns);
+    else
+        turns.insert(turns.end(), captureTurns.begin(), captureTurns.end());
 
     // Vrátíme desku do pùvodního stavu a invertujeme tahy
-	if (player->GetPlayerColor() == PIECE_COLOR_BLACK)
-		board->Inverse();
+    if (player->GetPlayerColor() == PIECE_COLOR_BLACK)
+        board->Inverse();
 }
 
 Turns GameGothicCheckers::CheckForCaptureTurns(GameBoard* board, Player* player, ChessPiece* piece)
@@ -283,16 +283,16 @@ void GameGothicCheckers::CheckForCaptureTurnsInner(GameBoard* board, Player* pla
 
 void GameGothicCheckers::CheckForMove(GameBoard* board, ChessPiece* piece, Turns* turns)
 {
-	Position pos = piece->GetPiecePosition();
+    Position pos = piece->GetPiecePosition();
 
-	if (piece->GetPieceType() == PIECE_TYPE_PAWN)
-	{
-		for (const int* pattern : _pawnCapturePattern)
-			CheckForMoveInner(board, pos, turns, pattern);
-	}
+    if (piece->GetPieceType() == PIECE_TYPE_PAWN)
+    {
+        for (const int* pattern : _pawnCapturePattern)
+            CheckForMoveInner(board, pos, turns, pattern);
+    }
     else if (piece->GetPieceType() == PIECE_TYPE_QUEEN)
-	{
-		int maxDimension = std::max(board->GetBoardNumRows(), board->GetBoardNumCols());
+    {
+        int maxDimension = std::max(board->GetBoardNumRows(), board->GetBoardNumCols());
 
         for (const int* pattern : _kingCapturePattern)
         {
@@ -302,68 +302,68 @@ void GameGothicCheckers::CheckForMove(GameBoard* board, ChessPiece* piece, Turns
                     break;
             }
         }
-	}
+    }
 }
 
 bool GameGothicCheckers::CheckForMoveInner(GameBoard* board, Position pos, Turns* turns, const int* pattern, int patternShift)
 {
-	int rowOffset = pos.row + pattern[0] * patternShift;
-	int colOffset = pos.col + pattern[1] * patternShift;
+    int rowOffset = pos.row + pattern[0] * patternShift;
+    int colOffset = pos.col + pattern[1] * patternShift;
 
-	if (!board->IsInBoard(rowOffset, colOffset))
+    if (!board->IsInBoard(rowOffset, colOffset))
         return true;
 
-	if (!board->IsFieldEmpty(rowOffset, colOffset))
-		return false;
+    if (!board->IsFieldEmpty(rowOffset, colOffset))
+        return false;
 
-	Turn turn;
-	turn.push_back(pos);
-	turn.push_back(Position(rowOffset, colOffset));
-	turns->push_back(turn);
+    Turn turn;
+    turn.push_back(pos);
+    turn.push_back(Position(rowOffset, colOffset));
+    turns->push_back(turn);
 
-	return true;
+    return true;
 }
 
 void GameGothicCheckers::OnTurnDone(Player* player, Turn* turn)
 {
     GameBoard* board = sGameManager->GetBoard();
-	int whitePieces = board->GetPiecesCountByColor(PIECE_COLOR_WHITE);
-	int blackPieces = board->GetPiecesCountByColor(PIECE_COLOR_BLACK);
+    int whitePieces = board->GetPiecesCountByColor(PIECE_COLOR_WHITE);
+    int blackPieces = board->GetPiecesCountByColor(PIECE_COLOR_BLACK);
 
-	// Povýšení na dámu
+    // Povýšení na dámu
     if (!turn->empty())
-	{
-		Position finalPos = turn->back();
+    {
+        Position finalPos = turn->back();
 
-		if (player->GetPlayerColor() == PIECE_COLOR_WHITE)
-		{
-			if (finalPos.row == 0) // Horní strana desky
+        if (player->GetPlayerColor() == PIECE_COLOR_WHITE)
+        {
+            if (finalPos.row == 0) // Horní strana desky
                 board->GetPieceAt(finalPos.row, finalPos.col)->SetPieceType(PIECE_TYPE_QUEEN);
-		}
-		else
-		{
-			if (finalPos.row == (board->GetBoardNumRows() - 1)) // Dolní strana desky
+        }
+        else
+        {
+            if (finalPos.row == (board->GetBoardNumRows() - 1)) // Dolní strana desky
                 board->GetPieceAt(finalPos.row, finalPos.col)->SetPieceType(PIECE_TYPE_QUEEN);
-		}
-	}
+        }
+    }
 
-	// Aktualizovat stav hry
-	if (board->GetMovesCountSinceLastCapture() == MAX_MOVES_WITH_NO_CAPTURE)
-	{
-		if (whitePieces == blackPieces)
-			_gameState = GAME_STATE_DRAW;
-		else if (whitePieces < blackPieces)
-			_gameState = GAME_STATE_BLACK_WIN;
-		else
-			_gameState = GAME_STATE_WHITE_WIN;
-	}
-	else 
-	{
-		if (whitePieces == 0)
-			_gameState = GAME_STATE_BLACK_WIN;
-		else if (blackPieces == 0)
-			_gameState = GAME_STATE_WHITE_WIN;
-	}
+    // Aktualizovat stav hry
+    if (board->GetMovesCountSinceLastCapture() == MAX_MOVES_WITH_NO_CAPTURE)
+    {
+        if (whitePieces == blackPieces)
+            _gameState = GAME_STATE_DRAW;
+        else if (whitePieces < blackPieces)
+            _gameState = GAME_STATE_BLACK_WIN;
+        else
+            _gameState = GAME_STATE_WHITE_WIN;
+    }
+    else 
+    {
+        if (whitePieces == 0)
+            _gameState = GAME_STATE_BLACK_WIN;
+        else if (blackPieces == 0)
+            _gameState = GAME_STATE_WHITE_WIN;
+    }
 }
 
 Turn GameGothicCheckers::GetBestTurn(Player* player, GameBoard* board)
@@ -379,17 +379,17 @@ bool GameGothicCheckers::CompareTurns(Turn& l, Turn& r)
     if (l.front().CompareTo(r.front()) && l.back().CompareTo(r.back())) // Tranzitivní kontrola
         return true;
 
-	if (l.size() != r.size())
-		return false;
+    if (l.size() != r.size())
+        return false;
 
-	int matches = 0;
+    int matches = 0;
 
-	for (int i = 0; i < l.size(); i++)
-		if (l.at(i).col == r.at(i).col && l.at(i).row == r.at(i).row)
-			matches++;
+    for (int i = 0; i < l.size(); i++)
+        if (l.at(i).col == r.at(i).col && l.at(i).row == r.at(i).row)
+            matches++;
 
-	if (matches == l.size())
-		return true;
+    if (matches == l.size())
+        return true;
 
-	return false;
+    return false;
 }

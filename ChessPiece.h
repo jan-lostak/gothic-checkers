@@ -21,11 +21,11 @@ enum PieceColor
 
 class ChessPiece
 {
-	public:
-		ChessPiece();
-		~ChessPiece();
+    public:
+        ChessPiece();
+        ~ChessPiece();
 
-		void SetPieceColor(PieceColor color) { _color = color;  }
+        void SetPieceColor(PieceColor color) { _color = color;  }
         PieceColor GetPieceColor() { return _color; }
 
         void SetPieceType(PieceType type) { _type = type; }
@@ -34,14 +34,14 @@ class ChessPiece
         void SetPiecePosition(Position position) { _position = position; }
         Position GetPiecePosition() { return _position; }
 
-		void SetCaptured(bool captured) { _captured = captured; }
+        void SetCaptured(bool captured) { _captured = captured; }
         bool IsCaptured() { return _captured; }
 
-	private:
-		PieceColor _color;
-		PieceType _type;
-		Position _position;
-		bool _captured;
+    private:
+        PieceColor _color;
+        PieceType _type;
+        Position _position;
+        bool _captured;
 };
 
 #endif // CHESSPIECE_H

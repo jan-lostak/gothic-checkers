@@ -12,9 +12,9 @@ enum PlayerType
 
 class Player
 {
-	public:
-		Player();
-		~Player();
+    public:
+        Player();
+        ~Player();
 
         void SetPlayerType(PlayerType playerType) { _playerType = playerType; }
         PlayerType GetPlayerType() { return _playerType; }
@@ -30,9 +30,9 @@ class Player
         bool IsHuman() { return _playerType == PLAYER_TYPE_HUMAN; }
         bool IsComputer() { return _playerType == PLAYER_TYPE_COMPUTER; }
 
-	private:
+    private:
         PlayerType _playerType;
-		PieceColor _color;
+        PieceColor _color;
         GameDifficulty _difficulty;
 };
 

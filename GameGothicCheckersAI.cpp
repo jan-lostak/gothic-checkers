@@ -4,25 +4,25 @@
 
 Turn GameGothicCheckersAI::ComputeBestTurn(Player* player, GameBoard* board, Game* game)
 {
-	Turn bestTurn;
+    Turn bestTurn;
 
     int depth = _depthByDifficulty[player->GetGameDifficulty()];
 
     Turns turns = game->GetAllValidTurns(player, board, true);
-	int bestRating = -MAX_VALUE;
+    int bestRating = -MAX_VALUE;
 
-	for (Turn& turn : turns)
-	{
+    for (Turn& turn : turns)
+    {
         board->DoTurn(turn, false);
         int rating = MiniMax(false, sGameManager->GetOponentOf(player), game, board, depth - 1);
         board->UndoTurn(turn);
 
-		if (rating > bestRating)
-		{
-			bestRating = rating;
-			bestTurn = turn;
-		}
-	}
+        if (rating > bestRating)
+        {
+            bestRating = rating;
+            bestTurn = turn;
+        }
+    }
 
     return bestTurn;
 }
@@ -32,17 +32,17 @@ int GameGothicCheckersAI::Evaluate(Player* player, GameBoard* board)
     QTime time = QTime::currentTime();
     qsrand((uint)time.msec());
 
-	int whiteScore = 0;
-	int blackScore = 0;
+    int whiteScore = 0;
+    int blackScore = 0;
 
-	std::vector<ChessPiece*> wPieces = board->GetAllChessPiecesByColor(PIECE_COLOR_WHITE);
-	std::vector<ChessPiece*> bPieces = board->GetAllChessPiecesByColor(PIECE_COLOR_BLACK);
+    std::vector<ChessPiece*> wPieces = board->GetAllChessPiecesByColor(PIECE_COLOR_WHITE);
+    std::vector<ChessPiece*> bPieces = board->GetAllChessPiecesByColor(PIECE_COLOR_BLACK);
 
-	for (ChessPiece* piece : wPieces)
-	{
+    for (ChessPiece* piece : wPieces)
+    {
         // Břičtení bonusu za umístění figurek
-		Position pos = piece->GetPiecePosition();
-		if (piece->GetPieceType() == PIECE_TYPE_PAWN)
+        Position pos = piece->GetPiecePosition();
+        if (piece->GetPieceType() == PIECE_TYPE_PAWN)
         {
             whiteScore += _whitePawnBonus[pos.row][pos.col] + PAWN_SCORE;
 
@@ -52,13 +52,13 @@ int GameGothicCheckersAI::Evaluate(Player* player, GameBoard* board)
         }
         else
             whiteScore += _whiteKingBonus[pos.row][pos.col] + QUEEN_SCORE;
-	}
+    }
 
-	for (ChessPiece* piece : bPieces)
-	{
+    for (ChessPiece* piece : bPieces)
+    {
         // Břičtení bonusu za umístění figurek
-		Position pos = piece->GetPiecePosition();
-		if (piece->GetPieceType() == PIECE_TYPE_PAWN)
+        Position pos = piece->GetPiecePosition();
+        if (piece->GetPieceType() == PIECE_TYPE_PAWN)
         {
             blackScore += _blackPawnBonus[pos.row][pos.col] + PAWN_SCORE;
 
@@ -66,9 +66,9 @@ int GameGothicCheckersAI::Evaluate(Player* player, GameBoard* board)
             int promotionPoints = 1 + pos.row;
             blackScore += promotionPoints * (qrand() % promotionPoints);
         }
-		else
+        else
             blackScore += _blackKingBonus[pos.row][pos.col] + QUEEN_SCORE;
-	}
+    }
 
     if (sGameManager->GetOponentOf(player)->GetPlayerColor() == PIECE_COLOR_WHITE)
         return blackScore - whiteScore;
@@ -80,12 +80,12 @@ int GameGothicCheckersAI::Evaluate(Player* player, GameBoard* board)
 
 int GameGothicCheckersAI::MiniMax(bool maximizing, Player* player, Game* game, GameBoard* board, int depth)
 {
-	if (depth == 0)
-		return Evaluate(player, board);
+    if (depth == 0)
+        return Evaluate(player, board);
 
     Turns turns = game->GetAllValidTurns(player, board, true);
-	if (turns.empty())
-		return Evaluate(player, board);
+    if (turns.empty())
+        return Evaluate(player, board);
 
     if (maximizing)
     {

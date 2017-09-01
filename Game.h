@@ -60,26 +60,26 @@ typedef std::vector<Turn> Turns;
 
 class Game
 {
-	public:
-		virtual bool IsTurnAllowed(Turns& /*legalTurns*/, Turn& /*turn*/) = 0;
+    public:
+        virtual bool IsTurnAllowed(Turns& /*legalTurns*/, Turn& /*turn*/) = 0;
 
-		virtual void Reset() = 0;
+        virtual void Reset() = 0;
 
-		virtual void ValidateTurn(Player* /*player*/, Turn& /*turn*/) = 0;
+        virtual void ValidateTurn(Player* /*player*/, Turn& /*turn*/) = 0;
         virtual Turns GetAllValidTurns(Player* /*player*/, GameBoard* /*board*/, bool ifMandatoryOnlyMandatory = false) = 0;
         virtual void GetValidTurnsForPiece(ChessPiece* /*piece*/, Player* /*player*/, GameBoard* /*board*/, Turns& /*turns*/) = 0;
         virtual Turn GetBestTurn(Player* /*player*/, GameBoard* /*board*/) = 0;
         virtual Turns GetMandatoryTurns(Turns& /*turns*/) = 0;
-		virtual GameState GetGameState() = 0;
+        virtual GameState GetGameState() = 0;
         virtual void SetGameState(GameState /*state*/) = 0;
-		virtual bool CompareTurns(Turn& /*turn*/, Turn& /*turn*/) = 0;
+        virtual bool CompareTurns(Turn& /*turn*/, Turn& /*turn*/) = 0;
 
-		virtual void OnTurnDone(Player* /*player*/, Turn* /*turn*/) = 0;
+        virtual void OnTurnDone(Player* /*player*/, Turn* /*turn*/) = 0;
 
-	protected:
-		GameDifficulty _gameDifficulty;
-		GameState _gameState;
-		GameAI* _gameAI;
+    protected:
+        GameDifficulty _gameDifficulty;
+        GameState _gameState;
+        GameAI* _gameAI;
 };
 
 #endif // GAME_H
